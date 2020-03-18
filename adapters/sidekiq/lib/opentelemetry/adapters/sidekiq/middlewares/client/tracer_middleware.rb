@@ -13,8 +13,11 @@ module OpenTelemetry
             def call(worker_class, job, _queue, _redis_pool)
               tracer.in_span(
                 worker_class,
-                attributes: job,
-                kind: :client
+                attributes: {
+                  jid: job['jid'],
+                  created_at: job['created_at'],
+                },
+                kind: :producer
               ) do |span|
                 yield
               end
