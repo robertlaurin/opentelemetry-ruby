@@ -11,6 +11,7 @@ module OpenTelemetry
         module Server
           class TracerMiddleware
             def call(_worker, msg, _queue)
+              parent_context = OpenTelemetry.propagation.extract(msg, extractors: OpenTelemetry.propagation.job_extractors)
               tracer.in_span(
                 msg['class'],
                 attributes: {
@@ -19,6 +20,7 @@ module OpenTelemetry
                   queue: msg['queue'],
                   created_at: msg['created_at'],
                 },
+                with_parent_context: parent_context,
                 kind: :consumer
               ) do |span|
                 yield

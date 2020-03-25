@@ -9,6 +9,8 @@ require 'opentelemetry/trace/propagation/trace_parent'
 require 'opentelemetry/trace/propagation/context_keys'
 require 'opentelemetry/trace/propagation/http_trace_context_extractor'
 require 'opentelemetry/trace/propagation/http_trace_context_injector'
+require 'opentelemetry/trace/propagation/job_trace_context_extractor'
+require 'opentelemetry/trace/propagation/job_trace_context_injector'
 
 module OpenTelemetry
   module Trace
@@ -27,6 +29,14 @@ module OpenTelemetry
         traceparent_header_key: 'HTTP_TRACEPARENT',
         tracestate_header_key: 'HTTP_TRACESTATE'
       )
+      JOB_TRACE_CONTEXT_EXTRACTOR = JobTraceContextExtractor.new(
+        traceparent_key: 'traceparent',
+        tracestate_key: 'tracestate'
+      )
+      JOB_TRACE_CONTEXT_INJECTOR = JobTraceContextInjector.new(
+        traceparent_key: 'traceparent',
+        tracestate_key: 'tracestate'
+      )
       BINARY_FORMAT = BinaryFormat.new
 
       private_constant :HTTP_TRACE_CONTEXT_INJECTOR, :HTTP_TRACE_CONTEXT_EXTRACTOR,
@@ -43,6 +53,14 @@ module OpenTelemetry
       # format for HTTP
       def http_trace_context_injector
         HTTP_TRACE_CONTEXT_INJECTOR
+      end
+
+      def job_trace_context_extractor
+        JOB_TRACE_CONTEXT_EXTRACTOR
+      end
+
+      def job_trace_context_injector
+        JOB_TRACE_CONTEXT_INJECTOR
       end
 
       # Returns an extractor that extracts context using the W3C Trace Context

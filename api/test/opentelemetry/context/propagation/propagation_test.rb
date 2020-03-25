@@ -71,7 +71,7 @@ describe OpenTelemetry::Context::Propagation::Propagation do
       Context.with_value('k1', 'v1') do
         Context.with_value('k2', 'v2') do
           Context.with_value('k3', 'v3') do
-            carrier = propagation.inject({}, http_injectors: injectors)
+            carrier = propagation.inject({}, injectors: injectors)
             _(carrier).must_equal('k1' => 'v1', 'k2' => 'v2', 'k3' => 'v3')
           end
         end
@@ -113,7 +113,7 @@ describe OpenTelemetry::Context::Propagation::Propagation do
 
     it 'extracts values from carrier into context' do
       carrier = { 'k1' => 'v1', 'k2' => 'v2', 'k3' => 'v3' }
-      context = propagation.extract(carrier, http_extractors: extractors)
+      context = propagation.extract(carrier, extractors: extractors)
       _(context['k1']).must_equal('v1')
       _(context['k2']).must_equal('v2')
       _(context['k3']).must_equal('v3')

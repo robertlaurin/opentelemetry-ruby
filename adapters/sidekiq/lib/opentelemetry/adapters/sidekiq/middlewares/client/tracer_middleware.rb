@@ -19,6 +19,7 @@ module OpenTelemetry
                 },
                 kind: :producer
               ) do |span|
+                OpenTelemetry.propagation.inject(job, injectors: OpenTelemetry.propagation.job_injectors)
                 yield
               end
             end

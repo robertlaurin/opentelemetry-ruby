@@ -15,13 +15,15 @@ module OpenTelemetry
 
       private_constant :USE_MODE_UNSPECIFIED, :USE_MODE_ONE, :USE_MODE_ALL
 
-      attr_writer :logger, :http_extractors, :http_injectors
+      attr_writer :logger, :http_extractors, :http_injectors, :job_extractors, :job_injectors
 
       def initialize
         @adapter_names = []
         @adapter_config_map = {}
         @http_extractors = nil
         @http_injectors = nil
+        @job_extractors = nil
+        @job_injectors = nil
         @span_processors = []
         @use_mode = USE_MODE_UNSPECIFIED
         @tracer_provider = Trace::TracerProvider.new
@@ -114,6 +116,8 @@ module OpenTelemetry
       def configure_propagation
         OpenTelemetry.propagation.http_extractors = @http_extractors || default_http_extractors
         OpenTelemetry.propagation.http_injectors = @http_injectors || default_http_injectors
+        OpenTelemetry.propagation.job_extractors = @job_extractors || default_job_extractors
+        OpenTelemetry.propagation.job_injectors = @job_injectors || default_job_injectors
       end
 
       def default_http_injectors
@@ -127,6 +131,19 @@ module OpenTelemetry
         [
           OpenTelemetry::Trace::Propagation.rack_http_trace_context_extractor,
           OpenTelemetry::CorrelationContext::Propagation.rack_http_extractor
+        ]
+      end
+
+      def default_job_injectors
+        [
+          OpenTelemetry::Trace::Propagation.job_trace_context_injector,
+
+        ]
+      end
+
+      def default_job_extractors
+        [
+          OpenTelemetry::Trace::Propagation.job_trace_context_extractor,
         ]
       end
     end
