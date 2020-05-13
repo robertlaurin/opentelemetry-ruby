@@ -1,8 +1,16 @@
+# frozen_string_literal: true
+
+# Copyright 2019 OpenTelemetry Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 module OpenTelemetry
   module SDK
     module Resources
       module Detectors
-        class Telemetry
+        module Telemetry
+          extend self
+
           def detect
             resource_labels = {}
             resource_labels[TELEMETRY_SDK_RESOURCE[:name]] = 'OpenTelemetry'

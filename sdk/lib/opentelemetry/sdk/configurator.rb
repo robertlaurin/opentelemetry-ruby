@@ -16,7 +16,7 @@ module OpenTelemetry
       private_constant :USE_MODE_UNSPECIFIED, :USE_MODE_ONE, :USE_MODE_ALL
 
       attr_writer :logger, :http_extractors, :http_injectors, :text_extractors,
-                  :text_injectors
+                  :text_injectors, :resource
 
       def initialize
         @adapter_names = []
@@ -27,7 +27,7 @@ module OpenTelemetry
         @text_injectors = nil
         @span_processors = []
         @use_mode = USE_MODE_UNSPECIFIED
-        @tracer_provider = Trace::TracerProvider.new
+        @resource = OpenTelemetry::SDK::Resources::Resource.create
       end
 
       def logger
@@ -70,11 +70,6 @@ module OpenTelemetry
         @span_processors << span_processor
       end
 
-      def detect_resources(resource = nil)
-        detected_resources = Resources::AutoDetector.new.detect
-        @tracer_provider = Trace::TracerProvider.new(detected_resources)
-      end
-
       # @api private
       # The configure method is where we define the setup process. This allows
       # us to make certain guarantees about which systems and globals are setup
@@ -88,11 +83,15 @@ module OpenTelemetry
         OpenTelemetry.correlations = CorrelationContext::Manager.new
         configure_propagation
         configure_span_processors
-        OpenTelemetry.tracer_provider = @tracer_provider
+        OpenTelemetry.tracer_provider = tracer_provider
         install_instrumentation
       end
 
       private
+
+      def tracer_provider
+        @tracer_provider ||= Trace::TracerProvider.new(@resource)
+      end
 
       def check_use_mode!(mode)
         @use_mode = mode if @use_mode == USE_MODE_UNSPECIFIED
@@ -110,7 +109,7 @@ module OpenTelemetry
 
       def configure_span_processors
         processors = @span_processors.empty? ? [default_span_processor] : @span_processors
-        processors.each { |p| @tracer_provider.add_span_processor(p) }
+        processors.each { |p| tracer_provider.add_span_processor(p) }
       end
 
       def default_span_processor

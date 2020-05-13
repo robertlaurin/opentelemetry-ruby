@@ -18,15 +18,11 @@ describe OpenTelemetry::SDK::Trace::Tracer do
     ->(trace_id:, span_id:, parent_context:, links:, name:, kind:, attributes:) { Result.new(decision: Decision::RECORD) } # rubocop:disable Lint/UnusedBlockArgument
   end
 
-  describe '#name' do
-    it 'reflects the name passed in' do
-      _(Tracer.new('component', 'semver:1.0').name).must_equal('component')
-    end
-  end
+  describe '#resource' do
+    let(:resource) { OpenTelemetry::SDK::Resources::Resource.create('a' => 'b') }
 
-  describe '#version' do
-    it 'reflects the version passed in' do
-      _(Tracer.new('component', 'semver:1.0').version).must_equal('semver:1.0')
+    it 'reflects the resource passed in' do
+      _(Tracer.new(resource).resource).must_equal(resource)
     end
   end
 

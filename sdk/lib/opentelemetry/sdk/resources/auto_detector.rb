@@ -10,22 +10,22 @@ require 'opentelemetry/sdk/resources/detectors/telemetry'
 module OpenTelemetry
   module SDK
     module Resources
-      class AutoDetector
+      module AutoDetector
+        extend self
+
         DETECTORS = [
-          OpenTelemetry::SDK::Resources::Detectors::GoogleCloudPlatform.new,
-          OpenTelemetry::SDK::Resources::Detectors::Telemetry.new,
+          OpenTelemetry::SDK::Resources::Detectors::GoogleCloudPlatform,
+          OpenTelemetry::SDK::Resources::Detectors::Telemetry,
         ]
 
-        def initialize(initial_resource = OpenTelemetry::SDK::Resources::Resource.create)
-          @initial_resource = initial_resource
-        end
-
         def detect
-          DETECTORS.each do |detector|
-            new_resource = detector.detect();
-            @initial_resource = @initial_resource.merge(new_resource)
+          resources = DETECTORS.map do |detector|
+            detector.detect();
           end
-          @initial_resource
+
+          resources.reduce(OpenTelemetry::SDK::Resources::Resource.create) do |empty_resource, detected_resource|
+            empty_resource.merge(detected_resource)
+          end
         end
       end
     end

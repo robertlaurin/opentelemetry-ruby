@@ -1,10 +1,18 @@
+# frozen_string_literal: true
+
+# Copyright 2019 OpenTelemetry Authors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 require 'google-cloud-env'
 
 module OpenTelemetry
   module SDK
     module Resources
       module Detectors
-        class GoogleCloudPlatform
+        module GoogleCloudPlatform
+          extend self
+
           def detect
             gcp_env = Google::Cloud::Env.new
             return Resource.create unless gcp_env.compute_engine?
@@ -18,20 +26,13 @@ module OpenTelemetry
             resource_labels[HOST_RESOURCE[:hostname]] = hostname
             resource_labels[HOST_RESOURCE[:id]] = gcp_env.lookup_metadata('instance', 'id') || ''
             resource_labels[HOST_RESOURCE[:name]] = gcp_env.lookup_metadata('instance', 'hostname') || ''
-            # resource_labels[HOST_RESOURCE[:type]] = ''
-            # resource_labels[HOST_RESOURCE[:image_name]] = ''
-            # resource_labels[HOST_RESOURCE[:image_id]] = ''
-            # resource_labels[HOST_RESOURCE[:image_version]] = ''
 
             if gcp_env.kubernetes_engine?
               resource_labels[K8S_RESOURCE[:cluster_name]] = gcp_env.instance_attribute('cluster-name') || ''
               resource_labels[K8S_RESOURCE[:namespace_name]] = gcp_env.kubernetes_engine_namespace_id || ''
               resource_labels[K8S_RESOURCE[:pod_name]] = hostname
-              # resource_labels[K8S_RESOURCE[:deployment_name]] = ''
 
               resource_labels[CONTAINER_RESOURCE[:name]] = ENV['CONTAINER_NAME'] || ''
-              # resource_labels[CONTAINER_RESOURCE[:image_name]] = ''
-              # resource_labels[CONTAINER_RESOURCE[:image_tag]] = ''
             end
 
             Resource.create(resource_labels)
