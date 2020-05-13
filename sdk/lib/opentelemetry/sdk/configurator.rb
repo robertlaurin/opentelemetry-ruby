@@ -70,6 +70,11 @@ module OpenTelemetry
         @span_processors << span_processor
       end
 
+      def detect_resources(resource = nil)
+        detected_resources = Resources::AutoDetector.new.detect
+        @tracer_provider = Trace::TracerProvider.new(detected_resources)
+      end
+
       # @api private
       # The configure method is where we define the setup process. This allows
       # us to make certain guarantees about which systems and globals are setup

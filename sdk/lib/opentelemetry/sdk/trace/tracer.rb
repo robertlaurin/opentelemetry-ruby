@@ -20,10 +20,8 @@ module OpenTelemetry
         # @param [String] version Instrumentation package version
         #
         # @return [Tracer]
-        def initialize(name, version)
-          @name = name
-          @version = version
-          @resource = Resources::Resource.create('name' => name, 'version' => version)
+        def initialize(resource)
+          @resource = resource
         end
 
         def start_root_span(name, attributes: nil, links: nil, start_timestamp: nil, kind: nil)
