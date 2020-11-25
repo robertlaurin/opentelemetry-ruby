@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+require 'pry'
+
 require 'simplecov'
 SimpleCov.start
 SimpleCov.minimum_coverage 85

@@ -66,7 +66,7 @@ module OpenTelemetry
             reset_on_fork(restart_thread: start_thread_on_boot)
           end
 
-          # does nothing for this processor
+          # Does nothing for this processor.
           def on_start(_span, _parent_context); end
 
           # Adds a span to the batch. Thread-safe; may block on lock.
@@ -82,7 +82,6 @@ module OpenTelemetry
             end
           end
 
-          # TODO: test this explicitly.
           # Export all ended spans to the configured `Exporter` that have not yet
           # been exported.
           #
@@ -121,8 +120,8 @@ module OpenTelemetry
             end
           end
 
-          # shuts the consumer thread down and flushes the current accumulated buffer
-          # will block until the thread is finished
+          # Shuts the consumer thread down and flushes the current accumulated buffer
+          # will block until the thread is finished.
           #
           # @param [optional Numeric] timeout An optional timeout in seconds.
           # @return [Integer] SUCCESS if no error occurred, FAILURE if a
