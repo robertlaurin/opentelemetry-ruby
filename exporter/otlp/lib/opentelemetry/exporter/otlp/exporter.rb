@@ -160,6 +160,11 @@ module OpenTelemetry
             retry if backoff?(retry_count: retry_count += 1)
             return FAILURE
           end
+        ensure
+          # Reset timeouts to defaults for the next call.
+          @http.open_timeout = @timeout
+          @http.read_timeout = @timeout
+          @http.write_timeout = @timeout if WRITE_TIMEOUT_SUPPORTED
         end
 
         def handle_redirect(location)
